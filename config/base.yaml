@@ -1,0 +1,40 @@
+tokopedia:
+  graphql_url: "https://gql.tokopedia.com/graphql"
+
+  headers:
+    sec-ch-ua-platform: '"Linux"'
+    sec-ch-ua: '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"'
+    sec-ch-ua-mobile: '?0'
+
+    accept: '*/*'
+    accept-language: 'en-US,en;q=0.9'
+    content-type: 'application/json'
+    referer: 'https://www.tokopedia.com/'
+
+    user-agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+
+    x-device: 'desktop-0.0'
+    x-source: 'tokopedia-lite'
+    x-tkpd-lite-service: 'zeus'
+    x-dark-mode: 'false'
+    x-price-center: 'true'
+    x-version: '0d88075'
+
+    dnt: '1'
+
+kafka:
+  bootstrap_servers:
+    - "kafka01.testing.ph:9092"
+  topic: "learning-kafka-tokopedia"
+
+postgres:
+  host: "10.100.1.102"
+  port: 5432
+  user: "postgres"
+  password: "rahasia2024"
+  database: "citus"
+
+elastic:
+  hosts:
+    - "http://192.168.29.42:9200"
+  index: "learning-tokopedia-asyarie"

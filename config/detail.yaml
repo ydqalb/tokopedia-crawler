@@ -1,0 +1,27 @@
+tokopedia:
+  graphql_url: "https://gql.tokopedia.com/graphql"
+
+  headers:
+    sec-ch-ua-platform: '"Linux"'
+    sec-ch-ua: '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"'
+    sec-ch-ua-mobile: '?0'
+
+    accept: '*/*'
+    accept-language: 'en-US,en;q=0.9'
+    content-type: 'application/json'
+    referer: 'https://www.tokopedia.com/'
+
+    user-agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+
+    x-device: 'desktop'
+    x-source: 'tokopedia-lite'
+    x-tkpd-lite-service: 'zeus'
+    x-dark-mode: 'false'
+    x-price-center: 'true'
+    x-version: '0d88075'
+    x-tkpd-akamai: 'pdpMainInfo'
+    x-tkpd-pdpb: '0'
+    x-date: 'Tue, 20 Jan 2026 22:47:00 +0700'
+
+    dnt: '1'
+    bd-device-id: '7581428380408137234'

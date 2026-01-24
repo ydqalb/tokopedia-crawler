@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  crawler:
+    build: .
+    container_name: tokopedia-crawler
+    command: >
+      python -m app.main
+      --keyword "${KEYWORD}"
+      --max-page "${MAX_PAGE}"
+    env_file:
+      - .env
+
+  consumer_postgres:
+    build: .
+    container_name: kafka-to-postgres
+    command: python -m app.consumer.kafka_to_postgres
+    env_file:
+      - .env
+
+  consumer_elastic:
+    build: .
+    container_name: kafka-to-elastic
+    command: python -m app.consumer.kafka_to_elastic
+    env_file:
+      - .env
