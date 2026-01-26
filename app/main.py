@@ -22,7 +22,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--keyword",
-        default=os.getenv("CRAWL_KEYWORD"),
+        help="Comma separated keywords, override CRAWL_KEYWORDS env",
         required=False
     )
     parser.add_argument(
@@ -32,11 +32,25 @@ def parse_args():
     )
 
     args = parser.parse_args()
-    
-    if not args.keyword:
-        raise ValueError("Keyword must be provided via --keyword or CRAWL_KEYWORD")
 
+    raw_keywords = (
+        args.keyword
+        if args.keyword
+        else os.getenv("CRAWL_KEYWORDS")
+    )
+
+    if not raw_keywords:
+        raise ValueError(
+            "Keyword must be provided via --keyword or CRAWL_KEYWORDS env"
+        )
+
+    keywords = [k.strip() for k in raw_keywords.split(",") if k.strip()]
+    if not keywords:
+        raise ValueError("Parsed keyword list is empty")
+
+    args.keywords = keywords
     return args
+
 
 
 def init_clients(config_base, config_detail):
@@ -84,30 +98,31 @@ async def crawl_and_process(keyword, max_page, crawler, parser, url_parser,
 async def main():
     args = parse_args()
     log = Logger()
-    log.info(f"Start crawling keyword='{args.keyword}' max_page={args.max_page}")
 
     config_base = load_config(env="base")
     config_detail = load_config(env="detail")
 
-    # Initialize clients
-    crawler, parser, url_parser, pdp_main_fetcher, pdp_second_fetcher = init_clients(config_base, config_detail)
+    crawler, parser, url_parser, pdp_main_fetcher, pdp_second_fetcher = init_clients(
+        config_base, config_detail
+    )
 
-    # Initialize sinks
     sink = init_sink(config_detail, log)
     await sink.start()
 
-    # Crawl and process products
-    await crawl_and_process(
-        args.keyword,
-        args.max_page,
-        crawler,
-        parser,
-        url_parser,
-        pdp_main_fetcher,
-        pdp_second_fetcher,
-        sink,
-        log
-    )
+    for keyword in args.keywords:
+        log.info(f"Start crawling keyword='{keyword}' max_page={args.max_page}")
+
+        await crawl_and_process(
+            keyword,
+            args.max_page,
+            crawler,
+            parser,
+            url_parser,
+            pdp_main_fetcher,
+            pdp_second_fetcher,
+            sink,
+            log
+        )
 
     await sink.close()
 
