@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import os
 
+from dotenv import load_dotenv
 from app.utils.logger import Logger
 from app.services.product_service import ProductService
 from app.services.sink_manager import SinkManager
@@ -17,40 +18,26 @@ from app.parser.pdp_main_fetcher import ProductDetailFetcher
 from app.parser.pdp_second_fetcher import PDPSecondaryFetcher
 from app.producer.kafka import KafkaProducerClient
 
+load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--keyword",
-        help="Comma separated keywords, override CRAWL_KEYWORDS env",
-        required=False
-    )
-    parser.add_argument(
-        "--max-page",
-        type=int,
-        default=int(os.getenv("CRAWL_MAX_PAGE", 1))
-    )
+    parser.add_argument("--keyword", action="append")
+    parser.add_argument("--max-page", type=int, default=int(os.getenv("CRAWL_MAX_PAGE", 1)))
 
     args = parser.parse_args()
 
-    raw_keywords = (
-        args.keyword
-        if args.keyword
-        else os.getenv("CRAWL_KEYWORDS")
-    )
-
-    if not raw_keywords:
-        raise ValueError(
-            "Keyword must be provided via --keyword or CRAWL_KEYWORDS env"
-        )
-
-    keywords = [k.strip() for k in raw_keywords.split(",") if k.strip()]
+    keywords = args.keyword
     if not keywords:
-        raise ValueError("Parsed keyword list is empty")
+        raw = os.getenv("CRAWL_KEYWORDS")
+        if raw:
+            keywords = [k.strip() for k in raw.split(",") if k.strip()]
 
-    args.keywords = keywords
-    return args
+    if not keywords:
+        raise ValueError("Keyword must be provided via --keyword or CRAWL_KEYWORDS env")
 
+    return keywords, args.max_page
 
 
 def init_clients(config_base, config_detail):
@@ -96,8 +83,10 @@ async def crawl_and_process(keyword, max_page, crawler, parser, url_parser,
 
 
 async def main():
-    args = parse_args()
+    keywords, max_page = parse_args()
     log = Logger()
+
+    log.info(f"Start crawling keywords={keywords} max_page={max_page}")
 
     config_base = load_config(env="base")
     config_detail = load_config(env="detail")
@@ -109,12 +98,12 @@ async def main():
     sink = init_sink(config_detail, log)
     await sink.start()
 
-    for keyword in args.keywords:
-        log.info(f"Start crawling keyword='{keyword}' max_page={args.max_page}")
+    for keyword in keywords:
+        log.info(f"Start crawling keyword='{keyword}'")
 
         await crawl_and_process(
             keyword,
-            args.max_page,
+            max_page,
             crawler,
             parser,
             url_parser,
