@@ -26,15 +26,3 @@ kafka:
   bootstrap_servers:
     - "localhost:9092"
   topic: "learning-kafka-tokopedia"
-
-postgres:
-  host: "localhost"
-  port: 5432
-  user: "YOUR_POSTGRES_USER"
-  password: "YOUR_POSTGRES_PASSWORD"
-  database: "YOUR_POSTGRES_DB"
-
-elastic:
-  hosts:
-    - "http://localhost:9200"
-  index: "learning-tokopedia-index"

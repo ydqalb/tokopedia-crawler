@@ -36,8 +36,8 @@ flowchart TD
 - Parsing hasil pencarian produk
 - Fetcher detail produk dan enrichment lanjutan
 - **Dual Output Support**: Kafka dan JSON file secara bersamaan atau terpisah
-- **Flexible Output Control**: Pilih output ke Kafka, JSON, atau keduanya
-- **Auto Folder Creation**: Folder output dibuat otomatis
+- **Flexible Output Control**: Pilih output ke Kafka, JSON, atau keduanya saja
+- **Auto Folder Creation**: Folder `output/` dibuat otomatis
 
 ## Prasyarat
 
@@ -68,7 +68,6 @@ Beberapa konfigurasi penting yang digunakan antara lain:
 - URL GraphQL Tokopedia
 - Header request
 - Endpoint Kafka
-- Setting PostgreSQL / Elasticsearch
 
 ## Menjalankan Aplikasi
 
@@ -208,7 +207,7 @@ app/
   crawler/      # engine crawler, client, payload, rate limiter
   parser/       # parser dan enricher produk
   producer/     # client producer Kafka
-  consumer/     # consumer sink (Kafka, PostgreSQL, Elasticsearch, JSON)
+  consumer/     # consumer sink (Kafka, JSON)
   services/     # service orchestrator output dan sink
 config/         # konfigurasi YAML
 output/         # folder output JSON (dibuat otomatis)
@@ -248,11 +247,14 @@ Jika menggunakan `--json-output`, data akan disimpan dalam format JSON array:
 ## Catatan
 
 Pastikan service yang dibutuhkan sudah tersedia sesuai konfigurasi:
-- **Kafka**: Diperlukan jika tidak menggunakan `--skip-kafka`
+- **Kafka**: Diperlukan jika tidak menggunakan `--skip-kafka` (default: enabled)
 - **JSON File**: Default disimpan ke folder `output/` (folder dibuat otomatis)
   - Filename tanpa path → disimpan di `output/`
   - Absolute path → disimpan sesuai path yang diberikan
 - **Output Behavior**: 
   - Tanpa flag `--json-output` → otomatis ke `output/{keyword}.json`
   - Multiple keywords tanpa flag → otomatis ke `output/results.json`
-- Aplikasi dapat mengirimkan hasil ke Kafka, JSON file, atau keduanya sesuai flag yang digunakan
+- **Output Options**: Aplikasi dapat mengirimkan hasil ke:
+  - Kafka saja (default)
+  - JSON saja (`--skip-kafka`)
+  - Kafka + JSON bersamaan (tanpa flag khusus)
