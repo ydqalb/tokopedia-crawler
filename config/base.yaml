@@ -24,17 +24,17 @@ tokopedia:
 
 kafka:
   bootstrap_servers:
-    - "kafka01.testing.ph:9092"
+    - "localhost:9092"
   topic: "learning-kafka-tokopedia"
 
 postgres:
-  host: "10.100.1.102"
+  host: "localhost"
   port: 5432
-  user: "postgres"
-  password: "rahasia2024"
-  database: "citus"
+  user: "YOUR_POSTGRES_USER"
+  password: "YOUR_POSTGRES_PASSWORD"
+  database: "YOUR_POSTGRES_DB"
 
 elastic:
   hosts:
-    - "http://192.168.29.42:9200"
-  index: "learning-tokopedia-asyarie"
+    - "http://localhost:9200"
+  index: "learning-tokopedia-index"

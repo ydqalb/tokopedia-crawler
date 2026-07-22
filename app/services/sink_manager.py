@@ -1,8 +1,9 @@
 class SinkManager:
-    def __init__(self, kafka=None, postgres=None, elastic=None, log=None):
+    def __init__(self, kafka=None, postgres=None, elastic=None, json_sink=None, log=None):
         self.kafka = kafka
         self.postgres = postgres
         self.elastic = elastic
+        self.json_sink = json_sink
         self.log = log
 
     async def start(self):
@@ -17,6 +18,9 @@ class SinkManager:
         if self.elastic:
             await self.elastic.start()
             self.log.ok("Elastic connected")
+
+        if self.json_sink:
+            await self.json_sink.start()
 
     async def send(self, data):
         if self.kafka:
@@ -41,9 +45,21 @@ class SinkManager:
             except Exception as e:
                 self.log.error(f"Elastic error → {e}")
 
+        if self.json_sink:
+            try:
+                await self.json_sink.send(data)
+            except Exception as e:
+                self.log.error(f"JSON error → {e}")
+
     async def close(self):
         if self.kafka:
             await self.kafka.close()
+
+        if self.postgres:
+            await self.postgres.close()
+
+        if self.json_sink:
+            await self.json_sink.close()
 
         if self.postgres:
             await self.postgres.close()
